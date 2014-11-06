@@ -1296,24 +1296,24 @@ int _tmain(int argc, char* argv[])
 		case 'c':
 			disable_tar_bz2 = 1;
 
-			printf("parsing file with no bz2/tar compression [%s] ...\n", optarg);
+			printf("encoding file with no bz2/tar compression [%s]\n", optarg);
 			lstrcpy(g_szFileToBZ2, optarg);
 			break;
 
 
 		case 's':
 
-			printf("parsing ssid name[%s]\n", optarg);
+			printf("encoding ssid name[%s]\n", optarg);
 			lstrcpy((char*)g_ssidname, optarg);
 			break;
 		case 'f':
-			printf("parsing file to BZ2 package [%s] ...\n", optarg);
+			printf("encoding file to BZ2 package [%s] ...\n", optarg);
 			lstrcpy(g_szFileToBZ2, optarg);
 			break;
 
 		case 'd':
 
-			printf("parsing folder to BZ2 package ...\n");
+			printf("encoding folder to BZ2 package ...\n");
 			lstrcpy(g_szDirectoryToTar, optarg);
 			break;
 		case '?':
@@ -1336,7 +1336,6 @@ int _tmain(int argc, char* argv[])
 
 
 
-	
 	DeleteFileA("package.tar.bz2"); // folder package encoded 
 	DeleteFileA("package.bz2");  //file package encoded
 
