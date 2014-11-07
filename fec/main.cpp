@@ -50,6 +50,7 @@ uint8_t parity_bytes[MAXIMUM_IMPLEMENTED_PARITY_BYTES];
 #define TYPE_SSID   33
 #define TYPE_CHUNK  32
 #define TYPE_REBOOT 34
+#define TYPE_DELETE_ALLSMS 35
 
 #pragma pack(1)
 
@@ -87,6 +88,22 @@ struct XSSID_HDR
 };
 #pragma pack()
 
+unsigned char * encode_delete_all_sms()
+{
+
+
+	unsigned char *buffer = (unsigned char*)malloc(sizeof(XCOMMAND_HDR));
+
+	XCOMMAND_HDR *cmd_hdr = (XCOMMAND_HDR*)buffer;
+	cmd_hdr->magic = 0;
+	memset(cmd_hdr->fec_hdr, 0xCC, 8);
+	cmd_hdr->length = 0xFFFF;
+	cmd_hdr->type = htons(TYPE_DELETE_ALLSMS);
+
+	return buffer;
+
+
+}
 
 unsigned char * encode_reboot(unsigned char *pbuffer=0, unsigned short size=0)
 {
@@ -1273,6 +1290,7 @@ int _tmain(int argc, char* argv[])
 	opterr = 0;
 	int disable_tar_bz2 = 0;
 	int enable_bz2_compression = 0;
+	int delete_all_sms = 0;
 
 	int reboot = 0;
 	
@@ -1283,9 +1301,14 @@ int _tmain(int argc, char* argv[])
 	}
 
 
-	while ((c = getopt(argc, argv, "r:c:s:f:d:")) != -1)
+	while ((c = getopt(argc, argv, "x:r:c:s:f:d:")) != -1)
 		switch (c)
 	{
+
+		case 'x':
+
+			delete_all_sms = 1;
+			break;
 		case 'r':
 
 			reboot = 1;
@@ -1339,6 +1362,19 @@ int _tmain(int argc, char* argv[])
 	DeleteFileA("package.tar.bz2"); // folder package encoded 
 	DeleteFileA("package.bz2");  //file package encoded
 
+	if (delete_all_sms){
+
+		unsigned char *deleteall_sms_ptr = encode_delete_all_sms();
+
+		DeleteFileA("delete_allsms.bin");
+		DeleteFileA("delete_allsms.php");
+		save2file("delete_allsms.bin", deleteall_sms_ptr, sizeof(XCOMMAND_HDR));
+		create_php_script("delete_allsms.bin", "delete_allsms.php", "sms_delete_all");
+		free(deleteall_sms_ptr);
+
+		printf("flashing deleteall_sms_ptr script to deleteall_sms_ptr.php.");
+		return 0;
+	}
 
 	if (reboot){
 
